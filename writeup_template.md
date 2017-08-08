@@ -27,6 +27,8 @@ The goals / steps of this project are the following:
 [image6]: ./examples/placeholder.png "Traffic Sign 3"
 [image7]: ./examples/placeholder.png "Traffic Sign 4"
 [image8]: ./examples/placeholder.png "Traffic Sign 5"
+[image9]: ./output/class_histogram_validation.png "Visualization"
+[image10]: ./output/leftturn.png "Visualization of Sign"
 
 ## Rubric Points
 ###Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
@@ -36,7 +38,7 @@ The goals / steps of this project are the following:
 
 ####1. Provide a Writeup / README that includes all the rubric points and how you addressed each one. You can submit your writeup as markdown or pdf. You can use this template as a guide for writing the report. The submission includes the project code.
 
-You're reading it! and here is a link to my [project code](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
+You're reading it! and here is a link to my [project code](https://github.com/suprnrdy/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
 
 ###Data Set Summary & Exploration
 
@@ -63,44 +65,46 @@ Here is an exploratory visualization of the data set. It is a histogram showing 
 
 ![alt text][image1]
 
+![alt text][image9]
+
+![alt text][image10]
+
+
+
 ###Design and Test a Model Architecture
 
 ####1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
 
-As a first step, I decided to convert the images to grayscale because ...
+As a first step, I decided to convert the images to grayscale because this reduced the number of features that the network needed to train on, in turn speeding up the process.  
 
 Here is an example of a traffic sign image before and after grayscaling.
 
 ![alt text][image2]
 
-As a last step, I normalized the image data because ...
+I then randomly flip the images and set a random brightness on each batch to help reduce overfitting of the model.  
 
-I decided to generate additional data because ... 
+Next, I normalized the image data to zero mean unit norm to help keep our gradients from going out of control.  By centering the data points and keeping the range constrained, we can help keep our training more stable. 
 
-To add more data to the the data set, I used the following techniques because ... 
+To help the network recognize patterns and edges better, I increased the contrast by 20%.  I did this because in the sample images I noticed some of the signs had very little contrast in them and with some testing was able to increase accuracy by increasing contrast.  
 
-Here is an example of an original image and an augmented image:
-
-![alt text][image3]
-
-The difference between the original data set and the augmented data set is the following ... 
+I noticed that even though accuracy was very high after training, certain signs were not being classified correctly.  When checking with the histogram of the training set, I could see that the same invalid predictions were related to those with very little samples in the training set, such as Speed limit 20Km/h or Dangerous curve right. If I were to augment the dataset, I would make a few copies of each image and run them through some filters such as blur, pixelate, and adjust the orientation of the images.
 
 
 ####2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
 My final model consisted of the following layers:
 
-|      Layer      |               Description                |
-| :-------------: | :--------------------------------------: |
-|      Input      |            32x32x3 RGB image             |
-| Convolution 3x3 | 1x1 stride, same padding, outputs 32x32x64 |
-|      RELU       |                                          |
-|   Max pooling   |      2x2 stride,  outputs 16x16x64       |
-| Convolution 3x3 |                   etc.                   |
-| Fully connected |                   etc.                   |
-|     Softmax     |                   etc.                   |
-|                 |                                          |
-|                 |                                          |
+|      Layer       |               Description                |
+| :--------------: | :--------------------------------------: |
+|      Input       |            32x32x3 RGB image             |
+| RGB-to-grayscale |         32x32x1 Grayscale Image          |
+| Convolution 5x5  | 1x1 stride, valid padding, outputs 32x32x30 |
+|       RELU       |                                          |
+|   Max pooling    |      2x2 stride,  outputs 16x16x64       |
+| Convolution 3x3  |                   etc.                   |
+| Fully connected  |                   etc.                   |
+|     Softmax      |                   etc.                   |
+|                  |                                          |
 
 
 
